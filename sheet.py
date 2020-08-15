@@ -12,6 +12,7 @@ class Sheet:
     def __init__(self, name):
         self.name = name
         self.dico_of_days = {}
+        self.project_name_row = []
 
 
     def from_scratch(self, day, month, year, project, words):
@@ -42,10 +43,8 @@ class Sheet:
         nrow = sheet1.nrows
         ncol = sheet1.ncols
 
-        print(nrow)
-        print(ncol)
 
-
+        self.project_name_row = sheet1.row_values(0)
 
         for i in range(1,nrow):
             day_obj = Day(sheet1.cell_value(i,0))
@@ -54,12 +53,11 @@ class Sheet:
                 day_obj.list_of_projects.append(project_obj)
             self.dico_of_days[day_obj] = day_obj.get_list()
 
-        print(nrow)
-        print(ncol)
-        print()
 
-        print(self.dico_of_days)
+        print(self.project_name_row)
         print()
+        print(self.dico_of_days)
+
 
     def update_file(self, day, month, year, new_project, new_words):
 
@@ -67,25 +65,41 @@ class Sheet:
         # If it does, update new word count or add to dico.
         temp_obj = Project(new_project, new_words)
 
+        today = day + " " + month
+
         temp_list = []
 
+        fuck_given = False
+        list_of_fucks = []
+
         for fuck in self.dico_of_days:
-            if fuck.get_date() == day + " " + month:
+            print(self.dico_of_days)
+            print(fuck)
+
+            if fuck.get_date() == today:
                 jim = self.dico_of_days[fuck]
 
                 for i in jim:
                     temp_list.append(i.get_name())
 
                 if temp_obj.get_name() in temp_list:
-                    for j in range(0,len(self.dico_of_days[fuck])):
-                        if self.dico_of_days[fuck][j].get_name() == temp_obj.get_name():
-                            self.dico_of_days[fuck][j].set_words(new_words)
+                    for j in range(0,len(jim)):
+                        if jim[j].get_name() == temp_obj.get_name():
+                            jim[j].set_words(new_words)
                             pass
 
 
                 if not temp_obj.get_name() in temp_list:
-                    self.dico_of_days[fuck] = self.dico_of_days[fuck] + [temp_obj]
+                    jim = jim + [temp_obj]
                     pass
+
+        for fuck in self.dico_of_days:
+            list_of_fucks.append(fuck.get_date())
+
+        if today not in list_of_fucks:
+            self.dico_of_days[Day(today)] = [temp_obj]
+
+        print(self.dico_of_days)
 
 
         # Once all checked are done, re-write the sheet with updated info
@@ -94,14 +108,25 @@ class Sheet:
 
         counter_rows = 0
         counter_col = 0
+        existing_col_index = 9999
 
         for i in self.dico_of_days:
+            print(self.dico_of_days)
+            print()
             counter_rows += 1
             sheet1.write(counter_rows,0,i.get_date())
             for j in range(len(self.dico_of_days[i])):
-                counter_col += 1
-                sheet1.write(0,counter_col,self.dico_of_days[i][j].get_name())
-                sheet1.write(counter_rows,counter_col,self.dico_of_days[i][j].get_words())
+                for hey, bob in enumerate([self.project_name_row]):
+                    if bob == self.dico_of_days[i][j].get_name():
+                        existing_col_index = hey
+                if existing_col_index != 9999:
+                    sheet1.write(counter_rows,existing_col_index,self.dico_of_days[i][j].get_words())
+                else:
+                    counter_col += 1
+                    sheet1.write(0,counter_col,self.dico_of_days[i][j].get_name())
+                    sheet1.write(counter_rows,counter_col,self.dico_of_days[i][j].get_words())
+
+
 
 
         wb.save("PTS_" + month + "_" + year + ".xls")
