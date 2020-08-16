@@ -2,8 +2,6 @@ class Project:
 
     def __init__(self, name):
         self.name = name
-        #self.words = words
-        #self.date = date
         self.list_of_occurences = []
 
     def get_name(self):
