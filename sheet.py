@@ -11,10 +11,8 @@ class Sheet:
     def __init__(self, name):
         self.name = name
         self.main_list = []
-        self.project_name_row = []
         self.project_dates_col = []
-        self.nrow = 0
-        self.ncol = 0
+
 
 
     def from_scratch(self, day, month, year, project, words):
