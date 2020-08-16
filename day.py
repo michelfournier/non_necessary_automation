@@ -1,4 +1,4 @@
-import project_hoy
+#import projects
 from datetime import date
 
 
@@ -17,8 +17,8 @@ class Day:
     def get_list_len(self):
         return len(self.list_of_projects)
 
-    def pop_list_names(self, list1):
-        for i in range(len(list1)):
-            self.list_of_proj_names.append(list1(i).get_name())
+    #def pop_list_names(self, list1):
+        #for i in range(len(list1)):
+            #self.list_of_proj_names.append(list1(i).get_name())
 
-        return self.list_of_proj_names
+        #return self.list_of_proj_names

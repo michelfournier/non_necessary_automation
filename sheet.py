@@ -1,5 +1,4 @@
-from project_hoy import Project
-from day import Day
+from projects import Project
 import time
 import xlwt
 import xlrd
@@ -11,8 +10,11 @@ class Sheet:
 
     def __init__(self, name):
         self.name = name
-        self.dico_of_days = {}
+        self.main_list = []
         self.project_name_row = []
+        self.project_dates_col = []
+        self.nrow = 0
+        self.ncol = 0
 
 
     def from_scratch(self, day, month, year, project, words):
@@ -42,89 +44,98 @@ class Sheet:
 
         nrow = sheet1.nrows
         ncol = sheet1.ncols
+        self.project_dates_col = sheet1.col_values(0)
 
+        data_for_the_day = []
+        #self.project_name_row = sheet1.row_values(0)
 
-        self.project_name_row = sheet1.row_values(0)
+        for i in range(1,ncol):
+            project_obj = Project(sheet1.cell_value(0,i))
+            for j in range(1, nrow):
+                date = sheet1.cell_value(j,0)
+                words = sheet1.cell_value(j, i)
+                project_obj.list_of_occurences.append([date, words])
 
-        for i in range(1,nrow):
-            day_obj = Day(sheet1.cell_value(i,0))
-            for j in range(1, ncol):
-                project_obj = Project(sheet1.cell_value(0, j), sheet1.cell_value(i, j))
-                day_obj.list_of_projects.append(project_obj)
-            self.dico_of_days[day_obj] = day_obj.get_list()
-
-
-        print(self.project_name_row)
-        print()
-        print(self.dico_of_days)
+            self.main_list.append(project_obj)
 
 
     def update_file(self, day, month, year, new_project, new_words):
 
-        # checking for date key, if project already exists in dico.
-        # If it does, update new word count or add to dico.
-        temp_obj = Project(new_project, new_words)
-
         today = day + " " + month
 
-        temp_list = []
+        temp_project = Project(new_project)
 
-        fuck_given = False
-        list_of_fucks = []
+        dates_from_list_of_dates = []
+        for dates in self.project_dates_col:
+            if dates != " ":
+                dates_from_list_of_dates.append(dates)
 
-        for fuck in self.dico_of_days:
-            print(self.dico_of_days)
-            print(fuck)
+        index_proj = 9999
+        project_exists = False
+        project_date_exists = False
+        index_date = 9999
 
-            if fuck.get_date() == today:
-                jim = self.dico_of_days[fuck]
+        # checks if project project exists and get its index in the main list
+        for index, project in enumerate(self.main_list):
+            if project.get_name() == new_project:
+                index_proj = index
+                project_exists = True
 
-                for i in jim:
-                    temp_list.append(i.get_name())
+        if project_exists == True:
+            for date_proj, data_pair in enumerate(self.main_list[index_proj].list_of_occurences):
+                if data_pair[0] == today:
+                    index_date = date_proj
+                    project_date_exists = True
 
-                if temp_obj.get_name() in temp_list:
-                    for j in range(0,len(jim)):
-                        if jim[j].get_name() == temp_obj.get_name():
-                            jim[j].set_words(new_words)
-                            pass
+            if project_date_exists == True:
+                self.main_list[index_proj].list_of_occurences[index_date][1] = new_words
+                pass
+
+            else:
+                self.main_list[index_proj].list_of_occurences.append([today, new_words])
+                pass
 
 
-                if not temp_obj.get_name() in temp_list:
-                    jim = jim + [temp_obj]
-                    pass
-
-        for fuck in self.dico_of_days:
-            list_of_fucks.append(fuck.get_date())
-
-        if today not in list_of_fucks:
-            self.dico_of_days[Day(today)] = [temp_obj]
-
-        print(self.dico_of_days)
-
+        elif project_exists == False:
+            temp_project.list_of_occurences.append([today, new_words])
+            self.main_list.append(temp_project)
 
         # Once all checked are done, re-write the sheet with updated info
         wb = xlwt.Workbook()
         sheet1 = wb.add_sheet(month+year)
 
-        counter_rows = 0
+        counter_rows = len(self.project_dates_col)
         counter_col = 0
-        existing_col_index = 9999
+        index_of_date = 9999
+        date_exists_in_file = False
 
-        for i in self.dico_of_days:
-            print(self.dico_of_days)
-            print()
-            counter_rows += 1
-            sheet1.write(counter_rows,0,i.get_date())
-            for j in range(len(self.dico_of_days[i])):
-                for hey, bob in enumerate([self.project_name_row]):
-                    if bob == self.dico_of_days[i][j].get_name():
-                        existing_col_index = hey
-                if existing_col_index != 9999:
-                    sheet1.write(counter_rows,existing_col_index,self.dico_of_days[i][j].get_words())
+
+
+        for projects in self.main_list:
+            counter_col += 1
+            sheet1.write(0, counter_col, projects.get_name())
+            for date_words_pair in range(len(projects.list_of_occurences)):
+
+
+                for index_of_row, date_of_proj in enumerate(dates_from_list_of_dates):
+                    if date_of_proj == projects.list_of_occurences[date_words_pair][0]:
+                        index_of_date = index_of_row
+                        date_exists_in_file = True
+                        print(index_of_date)
+
+                if date_exists_in_file == True:
+                    try:
+                        sheet1.write(index_of_date, 0, projects.list_of_occurences[date_words_pair][0])
+                        sheet1.write(index_of_date, counter_col, projects.list_of_occurences[date_words_pair][1])
+                    except:
+                        sheet1.write(index_of_date, counter_col, projects.list_of_occurences[date_words_pair][1])
+
+
                 else:
-                    counter_col += 1
-                    sheet1.write(0,counter_col,self.dico_of_days[i][j].get_name())
-                    sheet1.write(counter_rows,counter_col,self.dico_of_days[i][j].get_words())
+                    counter_rows +=1
+                    sheet1.write(counter_rows,0,projects.list_of_occurences[date_words_pair][0])
+                    sheet1.write(counter_rows,counter_col,projects.list_of_occurences[date_words_pair][1])
+                    dates_from_list_of_dates.append(projects.list_of_occurences[date_words_pair][0])
 
 
 
