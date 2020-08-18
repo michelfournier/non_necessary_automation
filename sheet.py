@@ -6,6 +6,7 @@ from xlwt import Workbook
 import os.path
 from datetime import date
 
+
 class Sheet:
 
     def __init__(self, name):
@@ -13,51 +14,45 @@ class Sheet:
         self.main_list = []
         self.project_dates_col = []
 
+    def get_sheet_name(self):
+        return self.name
 
 
-    def from_scratch(self, day, month, year, project, words):
+    def from_scratch(self, day, month, year, project, words, filename):
 
         day1 = day + " " + month
-        sheet_name = month+year
+        sheet_name = month + year
 
         wb = xlwt.Workbook()
 
         sheet1 = wb.add_sheet(sheet_name)
 
-        sheet1.write(1,0,day1)
-        sheet1.write(0,1,project)
-        sheet1.write(1,1,words)
+        sheet1.write(1, 0, day1)
+        sheet1.write(0, 1, project)
+        sheet1.write(1, 1, words)
 
+        wb.save(filename)
 
-        wb.save("PTS_" + month + "_" + year + ".xls")
+    def read_file(self, month, year, file):
 
-    def read_file(self, month, year):
+        wb_r = xlrd.open_workbook(file)
 
-        EXCEL_FILES_FOLDER = '/Users/michelfournier/Desktop/work_follow_up/'
-        excel_file_path = EXCEL_FILES_FOLDER+"PTS_" + month + "_" + year + ".xls"
-        loc = (excel_file_path)
-        wb_r = xlrd.open_workbook(loc)
-
-        sheet1 = wb_r.sheet_by_name(month+year)
+        sheet1 = wb_r.sheet_by_name(month + year)
 
         nrow = sheet1.nrows
         ncol = sheet1.ncols
         self.project_dates_col = sheet1.col_values(0)
 
-        data_for_the_day = []
-        #self.project_name_row = sheet1.row_values(0)
-
-        for i in range(1,ncol):
-            project_obj = Project(sheet1.cell_value(0,i))
+        for i in range(1, ncol):
+            project_obj = Project(sheet1.cell_value(0, i))
             for j in range(1, nrow):
-                date = sheet1.cell_value(j,0)
+                date = sheet1.cell_value(j, 0)
                 words = sheet1.cell_value(j, i)
                 project_obj.list_of_occurences.append([date, words])
 
             self.main_list.append(project_obj)
 
-
-    def update_file(self, day, month, year, new_project, new_words):
+    def update_file(self, day, month, year, new_project, new_words, filename):
 
         today = day + " " + month
 
@@ -100,20 +95,17 @@ class Sheet:
 
         # Once all checked are done, re-write the sheet with updated info
         wb = xlwt.Workbook()
-        sheet1 = wb.add_sheet(month+year)
+        sheet1 = wb.add_sheet(month + year)
 
         counter_rows = len(self.project_dates_col)
         counter_col = 0
         index_of_date = 9999
         date_exists_in_file = False
 
-
-
         for projects in self.main_list:
             counter_col += 1
             sheet1.write(0, counter_col, projects.get_name())
             for date_words_pair in range(len(projects.list_of_occurences)):
-
 
                 for index_of_row, date_of_proj in enumerate(dates_from_list_of_dates):
                     if date_of_proj == projects.list_of_occurences[date_words_pair][0]:
@@ -130,12 +122,9 @@ class Sheet:
 
 
                 else:
-                    counter_rows +=1
-                    sheet1.write(counter_rows,0,projects.list_of_occurences[date_words_pair][0])
-                    sheet1.write(counter_rows,counter_col,projects.list_of_occurences[date_words_pair][1])
+                    counter_rows += 1
+                    sheet1.write(counter_rows, 0, projects.list_of_occurences[date_words_pair][0])
+                    sheet1.write(counter_rows, counter_col, projects.list_of_occurences[date_words_pair][1])
                     dates_from_list_of_dates.append(projects.list_of_occurences[date_words_pair][0])
 
-
-
-
-        wb.save("PTS_" + month + "_" + year + ".xls")
+        wb.save(filename)

@@ -1,10 +1,22 @@
 from tkinter import *
 from tkinter.filedialog import askopenfilename, asksaveasfilename
 from tkinter.ttk import *
-from sheet.py import Sheet
+from sheet import Sheet
+from datetime import date
+
+# get today's date
+today = date.today()
+
+# get today's date in format dd YYYY Month_written
+day_month_year = today.strftime("%d %Y %B")
+lenght_today = len(day_month_year)
+
+day = day_month_year[0:2]
+year = day_month_year[3:7]
+month = day_month_year[8:lenght_today]
+
 
 class Window(Tk):
-
 
     def __init__(self):
         super().__init__()
@@ -51,7 +63,7 @@ class Window(Tk):
         self.input_words_field.pack(side=RIGHT, fill=X)
 
         # submit frame
-        self.btn_exit = Button(self.submit, text='Submit', command=self.submit)
+        self.btn_exit = Button(self.submit, text='Submit', command=self.submit_info)
         self.btn_exit.pack()
 
         # bouton d'arrêt
@@ -60,27 +72,41 @@ class Window(Tk):
 
         # it's own sheet object
 
-        self.sheet = Sheet()
-
-        # inputs
-
-        self.new_proj = "Entry for project"
-        self.new_words = "Entry for words"
+        self.sheet = Sheet("")
 
 
     def new_worksheet(self):
-        pass
+
+        self.sheet = Sheet("NEW")
 
     def open_file(self):
-        sheet_name = askopenfilename(title="Select file.")
+        # get the file
+        existing_file = askopenfilename(title="Select file.")
 
-        self.sheet = Sheet(sheet_name)
+        self.sheet = Sheet("OLD")
+
+        # call Sheet read function
+        self.sheet.read_file(month, year, existing_file)
+
+    def submit_info(self):
+
+        new_proj = self.input_project_field.get()
+
+        new_words = self.input_words_field.get()
+
+        filename = asksaveasfilename()
+
+        if self.sheet.get_sheet_name() == "NEW":
+            self.sheet.from_scratch(day, month, year, new_proj, new_words, filename)
+
+        else:
+            self.sheet.update_file(day, month, year, new_proj, new_words, filename)
+
+        # need field to go back to blank
+        self.input_project_field.delete(0, END)
+        self.input_words_field.delete(0, END)
 
 
-
-
-    def submit(self):
-        pass
 
 
 """""
@@ -96,7 +122,6 @@ class Window(Tk):
         self.pointage = Label(self.mess_frame1)
         self.pointage.pack(anchor=CENTER)
 """
-
 
 if __name__ == "__main__":
     f = Window()
