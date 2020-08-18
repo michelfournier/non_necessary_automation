@@ -10,13 +10,12 @@ class Project:
     def set_name(self, name):
         self.name = name
 
-
     def get_list_data(self):
         return self.list_of_occurences
 
     def total_words_month(self):
-        #might need a date filter
-        sum = 0
+        # might need a date filter
+        sum_words = 0
         for i in self.list_of_occurences:
-            sum += i[1]
-        return sum
+            sum_words += i[1]
+        return sum_words

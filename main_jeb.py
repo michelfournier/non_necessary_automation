@@ -5,13 +5,13 @@ import os.path
 # get today's date
 today = date.today()
 
-#get today's date in format dd YYYY Month_written
+# get today's date in format dd YYYY Month_written
 day_month_year = today.strftime("%d %Y %B")
-lenght_today = len(day_month_year)
+length_today = len(day_month_year)
 
 day = day_month_year[0:2]
 year = day_month_year[3:7]
-month = day_month_year[8:lenght_today]
+month = day_month_year[8:length_today]
 
 ##########
 
