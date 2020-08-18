@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter.filedialog import askopenfilename, asksaveasfilename
 from tkinter.ttk import *
+from sheet.py import Sheet
 
 class Window(Tk):
 
@@ -17,14 +18,14 @@ class Window(Tk):
         # création des différents frames de l'interface
         self.btn_frame = Frame(self)
         self.btn_frame.pack(fill=X)
-        self.mess_frame1 = Frame(self)
-        self.mess_frame1.pack(fill=X)
-        self.canvas_frame = Frame(self)
-        self.canvas_frame.pack(fill=BOTH, expand=1)
-        self.mess_frame = Frame(self)
-        self.mess_frame.pack(fill=X)
-        self.btn_frame2 = Frame(self)
-        self.btn_frame2.pack(fill=X)
+        self.proj_frame = Frame(self)
+        self.proj_frame.pack(fill=X)
+        self.words_frame = Frame(self)
+        self.words_frame.pack(fill=BOTH, expand=1)
+        self.submit = Frame(self)
+        self.submit.pack(fill=X)
+        self.stop_btn_frame = Frame(self)
+        self.stop_btn_frame.pack(fill=X)
 
         # Top buttons
         self.btn_new = Button(self.btn_frame, text='New month', command=self.new_worksheet)
@@ -35,29 +36,50 @@ class Window(Tk):
 
         # Input names
 
-        self.input_project_name = Label(self.mess_frame1, text="Project")
+        self.input_project_name = Label(self.proj_frame, text="Project")
         self.input_project_name.pack(side=LEFT)
 
-        self.input_words_name = Label(self.canvas_frame, text="Words")
+        self.input_words_name = Label(self.words_frame, text="Words")
         self.input_words_name.pack(side=LEFT)
 
         # input fields
 
-        self.input_project_field = Entry(self.mess_frame1)
+        self.input_project_field = Entry(self.proj_frame)
         self.input_project_field.pack(side=RIGHT, fill=X)
 
-        self.input_words_field = Entry(self.canvas_frame)
+        self.input_words_field = Entry(self.words_frame)
         self.input_words_field.pack(side=RIGHT, fill=X)
 
-        # bouton d'arrêt
-        self.btn_exit = Button(self.btn_frame2, text='exit', command=self.destroy)
+        # submit frame
+        self.btn_exit = Button(self.submit, text='Submit', command=self.submit)
         self.btn_exit.pack()
+
+        # bouton d'arrêt
+        self.btn_exit = Button(self.stop_btn_frame, text='exit', command=self.destroy)
+        self.btn_exit.pack()
+
+        # it's own sheet object
+
+        self.sheet = Sheet()
+
+        # inputs
+
+        self.new_proj = "Entry for project"
+        self.new_words = "Entry for words"
 
 
     def new_worksheet(self):
         pass
 
     def open_file(self):
+        sheet_name = askopenfilename(title="Select file.")
+
+        self.sheet = Sheet(sheet_name)
+
+
+
+
+    def submit(self):
         pass
 
 
