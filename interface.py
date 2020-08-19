@@ -4,7 +4,6 @@ from tkinter.ttk import *
 from sheet import Sheet
 from datetime import date
 
-
 # get today's date
 today = date.today()
 
@@ -83,7 +82,6 @@ class Window(Tk):
 
         self.sheet = Sheet("")
 
-
     def new_worksheet(self):
 
         self.sheet = Sheet("NEW")
@@ -100,7 +98,6 @@ class Window(Tk):
         self.display_day_accounts['text'] = "Accounts of the day\n{}".format(self.get_day_projects())
 
         print(day + " " + month)
-
 
     def submit_info(self):
 
@@ -139,22 +136,6 @@ class Window(Tk):
 
         return long_string
 
-
-
-
-"""""
-
-       # Création du canvas échiquier.
-        self.canvas_echiquier = CanvasEchiquier(self.canvas_frame, 60)
-        self.canvas_echiquier.pack(side=LEFT)
-
-        # Ajout d'une étiquette d'information.
-        self.messages = Label(self.mess_frame)
-        self.messages.pack(anchor=CENTER)
-
-        self.pointage = Label(self.mess_frame1)
-        self.pointage.pack(anchor=CENTER)
-"""
 
 if __name__ == "__main__":
     f = Window()
