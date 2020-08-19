@@ -46,9 +46,9 @@ class Sheet:
         for i in range(1, ncol):
             project_obj = Project(sheet1.cell_value(0, i))
             for j in range(1, nrow):
-                date = sheet1.cell_value(j, 0)
+                date_row = sheet1.cell_value(j, 0)
                 words = sheet1.cell_value(j, i)
-                project_obj.list_of_occurences.append([date, words])
+                project_obj.list_of_occurences.append([date_row, words])
 
             self.main_list.append(project_obj)
 
@@ -58,10 +58,9 @@ class Sheet:
 
         temp_project = Project(new_project)
 
-        dates_from_list_of_dates = []
-        for dates in self.project_dates_col:
-            if dates != " ":
-                dates_from_list_of_dates.append(dates)
+        if today not in self.project_dates_col:
+            self.project_dates_col.append(today)
+
 
         index_proj = 9999
         project_exists = False
@@ -73,29 +72,35 @@ class Sheet:
             if project.get_name() == new_project:
                 index_proj = index
                 project_exists = True
+                print(index_proj)
 
         if project_exists == True:
             for date_proj, data_pair in enumerate(self.main_list[index_proj].list_of_occurences):
+                print(data_pair[0])
                 if data_pair[0] == today:
                     index_date = date_proj
                     project_date_exists = True
+                    print(index_date)
 
             if project_date_exists == True:
                 self.main_list[index_proj].list_of_occurences[index_date][1] = new_words
-                pass
+
 
             else:
                 self.main_list[index_proj].list_of_occurences.append([today, new_words])
-                pass
 
 
-        elif project_exists == False:
+
+        if project_exists == False:
             temp_project.list_of_occurences.append([today, new_words])
+            print(temp_project.list_of_occurences)
             self.main_list.append(temp_project)
 
+
         # Once all checked are done, re-write the sheet with updated info
+
         wb = xlwt.Workbook()
-        sheet1 = wb.add_sheet(month + year)
+        sheet1 = wb.add_sheet(month + year, cell_overwrite_ok=True)
 
         counter_rows = len(self.project_dates_col)
         counter_col = 0
@@ -107,7 +112,7 @@ class Sheet:
             sheet1.write(0, counter_col, projects.get_name())
             for date_words_pair in range(len(projects.list_of_occurences)):
 
-                for index_of_row, date_of_proj in enumerate(dates_from_list_of_dates):
+                for index_of_row, date_of_proj in enumerate(self.project_dates_col):
                     if date_of_proj == projects.list_of_occurences[date_words_pair][0]:
                         index_of_date = index_of_row
                         date_exists_in_file = True
@@ -122,9 +127,41 @@ class Sheet:
 
 
                 else:
-                    counter_rows += 1
-                    sheet1.write(counter_rows, 0, projects.list_of_occurences[date_words_pair][0])
+                    sheet1.write(counter_rows, 0, today)
                     sheet1.write(counter_rows, counter_col, projects.list_of_occurences[date_words_pair][1])
-                    dates_from_list_of_dates.append(projects.list_of_occurences[date_words_pair][0])
+                    counter_rows += 1
+
+
+
+        self.create_month_list(wb)
 
         wb.save(filename)
+
+    def create_month_list(self, workbook):
+
+        projects_name = []
+
+        for projects in self.main_list:
+            projects_name.append(projects.get_name())
+
+        projects_name.sort()
+
+
+
+
+        wb = workbook
+        sheet2 = wb.add_sheet("Projects of the Month")
+
+        row_count = 0
+
+
+        for names in projects_name:
+            sheet2.write(row_count, 0, names + " (Original No - Match Words)")
+            row_count += 1
+            sheet2.write(row_count, 0, names + " (Original Repetition Words)")
+            row_count += 1
+            sheet2.write(row_count, 0, names + " (Original High Repetition Words)")
+            row_count += 1
+            sheet2.write(row_count, 0, names + " (Original Suppressed Words)")
+            row_count += 1
+

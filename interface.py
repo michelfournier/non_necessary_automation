@@ -4,6 +4,7 @@ from tkinter.ttk import *
 from sheet import Sheet
 from datetime import date
 
+
 # get today's date
 today = date.today()
 
@@ -97,6 +98,8 @@ class Window(Tk):
         self.sheet.read_file(month, year, existing_file)
 
         self.display_day_accounts['text'] = "Accounts of the day\n{}".format(self.get_day_projects())
+
+        print(day + " " + month)
 
 
     def submit_info(self):
