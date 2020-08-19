@@ -30,6 +30,10 @@ class Window(Tk):
         # création des différents frames de l'interface
         self.btn_frame = Frame(self)
         self.btn_frame.pack(fill=X)
+        # add label frame to list ongoing day projects name from sheet.mainlist
+        self.proj_list_frame = Frame(self)
+        self.proj_list_frame.pack(fill=X)
+
         self.proj_frame = Frame(self)
         self.proj_frame.pack(fill=X)
         self.words_frame = Frame(self)
@@ -45,6 +49,10 @@ class Window(Tk):
 
         self.btn_load = Button(self.btn_frame, text='Open', command=self.open_file)
         self.btn_load.pack(side=LEFT)
+
+        # List of proj of the day
+        self.display_day_accounts = Label(self.proj_list_frame)
+        self.display_day_accounts.pack(anchor=CENTER)
 
         # Input names
 
@@ -88,6 +96,9 @@ class Window(Tk):
         # call Sheet read function
         self.sheet.read_file(month, year, existing_file)
 
+        self.display_day_accounts['text'] = "Accounts of the day\n{}".format(self.get_day_projects())
+
+
     def submit_info(self):
 
         new_proj = self.input_project_field.get()
@@ -105,6 +116,25 @@ class Window(Tk):
         # need field to go back to blank
         self.input_project_field.delete(0, END)
         self.input_words_field.delete(0, END)
+
+        self.display_day_accounts['text'] = ""
+
+        self.display_day_accounts['text'] = "Accounts of the month\n" \
+                                            "{}".format(self.get_day_projects())
+
+    def get_day_projects(self):
+        long_string = ""
+        proj_counter = 0
+        for i in self.sheet.main_list:
+
+            if proj_counter % 3 != 0 or proj_counter == 0:
+                long_string += "{}, ".format(i.get_name())
+                proj_counter += 1
+            else:
+                long_string += "{},\n ".format(i.get_name())
+                proj_counter += 1
+
+        return long_string
 
 
 
