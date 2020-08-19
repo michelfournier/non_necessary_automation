@@ -139,4 +139,5 @@ class Window(Tk):
 
 if __name__ == "__main__":
     f = Window()
+    
     f.mainloop()
