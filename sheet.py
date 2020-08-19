@@ -11,14 +11,10 @@ class Sheet:
         self.main_list = []
         self.project_dates_col = []
 
-<<<<<<< HEAD
-    def from_scratch(self, day, month, year, project, words):
-=======
     def get_sheet_name(self):
         return self.name
 
     def from_scratch(self, day, month, year, project, words, filename):
->>>>>>> v3wGUI
 
         day1 = day + " " + month
         sheet_name = month + year
@@ -30,24 +26,13 @@ class Sheet:
         sheet1.write(1, 0, day1)
         sheet1.write(0, 1, project)
         sheet1.write(1, 1, words)
-<<<<<<< HEAD
-=======
 
         wb.save(filename)
->>>>>>> v3wGUI
 
     def read_file(self, month, year, file):
 
         wb_r = xlrd.open_workbook(file)
 
-<<<<<<< HEAD
-        excel_file_folder = '/Users/michelfournier/Desktop/work_follow_up/'
-        excel_file_path = excel_file_folder + "PTS_" + month + "_" + year + ".xls"
-        loc = excel_file_path
-        wb_r = xlrd.open_workbook(loc)
-
-=======
->>>>>>> v3wGUI
         sheet1 = wb_r.sheet_by_name(month + year)
 
         nrow = sheet1.nrows
@@ -57,21 +42,13 @@ class Sheet:
         for i in range(1, ncol):
             project_obj = Project(sheet1.cell_value(0, i))
             for j in range(1, nrow):
-<<<<<<< HEAD
-                date = sheet1.cell_value(j, 0)
-=======
                 date_row = sheet1.cell_value(j, 0)
->>>>>>> v3wGUI
                 words = sheet1.cell_value(j, i)
                 project_obj.list_of_occurrences.append([date_row, words])
 
             self.main_list.append(project_obj)
 
-<<<<<<< HEAD
-    def update_file(self, day, month, year, new_project, new_words):
-=======
     def update_file(self, day, month, year, new_project, new_words, filename):
->>>>>>> v3wGUI
 
         today = day + " " + month
 
@@ -115,11 +92,7 @@ class Sheet:
         # Once all checked are done, re-write the sheet with updated info
 
         wb = xlwt.Workbook()
-<<<<<<< HEAD
-        sheet1 = wb.add_sheet(month + year)
-=======
         sheet1 = wb.add_sheet(month + year, cell_overwrite_ok=True)
->>>>>>> v3wGUI
 
         counter_rows = len(self.project_dates_col)
         counter_col = 0
@@ -131,13 +104,8 @@ class Sheet:
             sheet1.write(0, counter_col, projects.get_name())
             for date_words_pair in range(len(projects.list_of_occurrences)):
 
-<<<<<<< HEAD
-                for index_of_row, date_of_proj in enumerate(dates_from_list_of_dates):
-                    if date_of_proj == projects.list_of_occurences[date_words_pair][0]:
-=======
                 for index_of_row, date_of_proj in enumerate(self.project_dates_col):
                     if date_of_proj == projects.list_of_occurrences[date_words_pair][0]:
->>>>>>> v3wGUI
                         index_of_date = index_of_row
                         date_exists_in_file = True
                         print(index_of_date)
@@ -151,14 +119,6 @@ class Sheet:
 
 
                 else:
-<<<<<<< HEAD
-                    counter_rows += 1
-                    sheet1.write(counter_rows, 0, projects.list_of_occurences[date_words_pair][0])
-                    sheet1.write(counter_rows, counter_col, projects.list_of_occurences[date_words_pair][1])
-                    dates_from_list_of_dates.append(projects.list_of_occurences[date_words_pair][0])
-
-        wb.save("PTS_" + month + "_" + year + ".xls")
-=======
                     sheet1.write(counter_rows, 0, today)
                     sheet1.write(counter_rows, counter_col, projects.list_of_occurrences[date_words_pair][1])
                     counter_rows += 1
@@ -219,4 +179,3 @@ class Sheet:
             sum_month += projects.total_words_month()
 
         return sum_month
->>>>>>> v3wGUI
