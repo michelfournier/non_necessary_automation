@@ -3,7 +3,6 @@ import xlwt
 import xlrd
 
 
-
 class Sheet:
 
     def __init__(self, name):
@@ -48,7 +47,7 @@ class Sheet:
 
             self.main_list.append(project_obj)
 
-    def update_file(self, day, month, year, new_project, new_words, filename):
+    def update_file(self, day, month, new_project, new_words):
 
         today = day + " " + month
 
@@ -90,6 +89,10 @@ class Sheet:
             self.main_list.append(temp_project)
 
         # Once all checked are done, re-write the sheet with updated info
+
+    def save_file(self, day, month, year, filename):
+
+        today = day + " " + month
 
         wb = xlwt.Workbook()
         sheet1 = wb.add_sheet(month + year, cell_overwrite_ok=True)
@@ -157,13 +160,13 @@ class Sheet:
             sheet2.write(row_count, 0, names + " (Original Suppressed Words)")
             row_count += 1
 
-    def total_day(self, day):
+    def total_day(self, today):
 
         sum_day = 0
 
         for projects in self.main_list:
             for pairs in range(len(projects.list_of_occurrences)):
-                if projects.list_of_occurrences[pairs][0] == day:
+                if projects.list_of_occurrences[pairs][0] == today:
                     try:
                         sum_day += int(projects.list_of_occurrences[pairs][1])
                     except ValueError:
